@@ -4,7 +4,7 @@ from allegroai import SingleFrame
 import cv2
 import logging
 from tqdm import tqdm
-from utils import create_dataset_folders
+from Data.utils import create_dataset_folders
 
 def my_local_source_video_aware(clml_frame: SingleFrame, frame_format: str = 'png', save_one_img: bool = True) -> str:
     local_prefix = "/isilon/Automotive/Data/Algo/clearml_global_cache/storage/s3"
