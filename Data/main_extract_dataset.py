@@ -6,7 +6,7 @@ import tqdm
 import argparse
 import cv2
 from my_clml_video_wrapper import my_local_source_video_aware
-from Data.utils import create_dataset_folders,save_labels,save_labels_pixels,extract_bboxes,get_image_size
+from utils import create_dataset_folders,save_labels,save_labels_pixels,extract_bboxes,get_image_size
 
 
 def main():
@@ -31,11 +31,11 @@ def main():
     num_frames = dv.get_count()[0]
     print('\nnumber of frames: {}\n'.format(num_frames))
     new_frames = []
-    save_folder='/home/roy.o@uveye.local/projects/clearml/Dataset'
+    save_root_folder='/home/roy.o@uveye.local/projects/clearml/Dataset'
     counter=0
     class_mapping={"broken_part":0 ,"missing_part":1 ,"missing_lp":2 ,"manual_fix":3}
 
-    create_dataset_folders(save_folder)
+    save_folder=create_dataset_folders(save_root_folder)
 
     new_frames=[]
     for i_frame, frame in enumerate(tqdm.tqdm(dv, total=num_frames)):
