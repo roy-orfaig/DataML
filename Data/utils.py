@@ -128,6 +128,3 @@ def create_dataset_folders(base_path: str = '/home/roy.o@uveye.local/projects/cl
         print(f"- {folder}")
 
     return dataset_folder  # Return the path to the dataset folder
-
-# Example usage:
-dataset_path = create_dataset_folders()

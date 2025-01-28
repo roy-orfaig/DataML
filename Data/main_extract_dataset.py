@@ -6,7 +6,7 @@ import tqdm
 import argparse
 import cv2
 from my_clml_video_wrapper import my_local_source_video_aware
-from utils import create_dataset_folders,save_labels,save_labels_pixels,extract_bboxes,get_image_size
+from Data.utils import create_dataset_folders,save_labels,save_labels_pixels,extract_bboxes,get_image_size
 
 
 def main():
