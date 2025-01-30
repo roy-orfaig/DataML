@@ -90,7 +90,8 @@ def process_dataset(base_dir, output_dir):
     print("Processing complete. Check the output directory.")
 
 # Example usage:
-data_directory = "/home/roy.o@uveye.local/projects/clearml/Dataset/2025-01-28_10-31-13"  # Change this to your dataset path
+data_directory = "/home/roy.o@uveye.local/projects/clearml/Dataset/2025-01-28_11-27-25"  # Change this to your dataset path
 output_directory = os.path.join(data_directory, "annotations")  # Output folder where labeled images will be saved
 os.makedirs(output_directory, exist_ok=True)
 process_dataset(data_directory, output_directory)
+print(f"Output: {output_directory}")

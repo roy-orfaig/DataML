@@ -6,9 +6,7 @@ import tqdm
 import argparse
 import cv2
 from my_clml_video_wrapper import my_local_source_video_aware
-from utils import create_dataset_folders,save_labels,save_labels_pixels,extract_bboxes,get_image_size
-
-
+from utils import create_dataset_folders,create_dataset_folders,save_missing_frames_to_csv
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--arg_example", default="look_at_me", type=str)
@@ -36,35 +34,59 @@ def main():
     class_mapping={"broken_part":0 ,"missing_part":1 ,"missing_lp":2 ,"manual_fix":3}
 
     save_folder=create_dataset_folders(save_root_folder)
-
+    csv_file=save_folder+"/missing_file.csv"
+    csv_file_prod=save_folder+"/production_bucket.csv"
+    list_of_missing_frame=[]
+    production_bucket_frame=[]
     new_frames=[]
+    missing_count=0
+    production_bucket_count=0
     for i_frame, frame in enumerate(tqdm.tqdm(dv, total=num_frames)):
-        # commented out example for getting local path to frame image:
-        img_path = my_local_source_video_aware(frame)
-        #v_path = frame.get_local_source()
-        if img_path == None or img_path == '':
-            continue
-        image = cv2.imread(img_path)
-        name_for_save = frame.id;
-        dataset_type=frame.metadata["splits"]["generic"]["set"]
-        bboxes_list = extract_bboxes(frame)
-        image_width, image_height=get_image_size(frame)
-        # Define new save path
-        save_img_path = os.path.join(save_folder, 'images',dataset_type,name_for_save + '.png')
-        save_txt_path = os.path.join(save_folder, 'labels', dataset_type,name_for_save+'.txt')
-        save_txt_path_pixels = os.path.join(save_folder, 'labels_pixels', dataset_type,name_for_save+'.txt')
-        # Save the image
-        cv2.imwrite(save_img_path, image)
-        save_labels(bboxes_list, class_mapping, image_width, image_height,save_txt_path)
-        save_labels_pixels(bboxes_list, class_mapping,save_txt_path_pixels )
-        #save_in_dataset
-        counter += 1
-        new_frames.append(frame)
+            # commented out example for getting local path to frame image:
+            img_path = my_local_source_video_aware(frame)
+            frame_id=frame.id
+            bucket_name = frame.context_id.split('/')[2]
+            if bucket_name=="production-us-eks-data":
+                 production_bucket_count+=1
+                 if production_bucket_count<1000:
+                    context_id=frame.context_id
+                    frame_id=frame.id
+                    production_bucket_frame.append([frame_id, bucket_name])
+                 
+            #v_path = frame.get_local_source()
+            if img_path == None or img_path == '':
+                missing_count+=1
+                if missing_count<1000:
+                    context_id=frame.context_id
+                    frame_id=frame.id
+                    bucket_name = context_id.split('/')[2]
+                    list_of_missing_frame.append([frame_id, bucket_name])
+                    print(f"missing_count: {missing_count}")
+                continue
+            image = cv2.imread(img_path)
+            name_for_save = frame.id;
+            dataset_type=frame.metadata["splits"]["generic"]["set"]
+            bboxes_list = extract_bboxes(frame)
+            image_width, image_height=get_image_size(frame)
+            # Define new save path
+            save_img_path = os.path.join(save_folder, 'images',dataset_type,name_for_save + '.png')
+            save_txt_path = os.path.join(save_folder, 'labels', dataset_type,name_for_save+'.txt')
+            save_txt_path_pixels = os.path.join(save_folder, 'labels_pixels', dataset_type,name_for_save+'.txt')
+            # Save the image
+            cv2.imwrite(save_img_path, image)
+            save_labels(bboxes_list, class_mapping, image_width, image_height,save_txt_path)
+            save_labels_pixels(bboxes_list, class_mapping,save_txt_path_pixels )
+            #save_in_dataset
+            counter += 1
+            new_frames.append(frame)
 
-        if len(new_frames) >= 100:
-            dst_out.add_frames(new_frames)
-            new_frames = []
-
+            if len(new_frames) >= 100:
+                dst_out.add_frames(new_frames)
+                new_frames = []
+    
+    save_missing_frames_to_csv(list_of_missing_frame,csv_file)
+    save_missing_frames_to_csv(production_bucket_frame,csv_file_prod)
+    print(f"Final missing_count: {missing_count}")
 if __name__ == '__main__':
     main()
 

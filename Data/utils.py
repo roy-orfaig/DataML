@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-
+import csv
 def save_labels(bboxes_list, class_mapping, image_width, image_height, output_file="filtered_bboxes.txt"):
     """
     Filters bounding boxes based on the given class_mapping dictionary.
@@ -128,3 +128,12 @@ def create_dataset_folders(base_path: str = '/home/roy.o@uveye.local/projects/cl
         print(f"- {folder}")
 
     return dataset_folder  # Return the path to the dataset folder
+
+# Function to write missing frames to a CSV file
+def save_missing_frames_to_csv(list_of_missing_frames,filename="missing_frames.csv"):
+    with open(filename, mode='w', newline='') as file:
+        writer =csv.writer(file)
+        # Write header
+        writer.writerow(["missing frame ID", "bucket"])
+        # Write data
+        writer.writerows(list_of_missing_frames)
