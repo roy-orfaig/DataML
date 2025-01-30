@@ -6,7 +6,7 @@ import tqdm
 import argparse
 import cv2
 from my_clml_video_wrapper import my_local_source_video_aware
-from utils import create_dataset_folders,create_dataset_folders,save_missing_frames_to_csv
+from utils import create_dataset_folders,create_dataset_folders,save_missing_frames_to_csv,save_labels_pixels,save_labels
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--arg_example", default="look_at_me", type=str)
@@ -46,21 +46,18 @@ def main():
             img_path = my_local_source_video_aware(frame)
             frame_id=frame.id
             bucket_name = frame.context_id.split('/')[2]
+            context_id=frame.context_id
+            preview_uri=frame.preview_uri
             if bucket_name=="production-us-eks-data":
                  production_bucket_count+=1
-                 if production_bucket_count<1000:
-                    context_id=frame.context_id
-                    frame_id=frame.id
-                    production_bucket_frame.append([frame_id, bucket_name])
+                 if production_bucket_count<100:
+                    production_bucket_frame.append([frame_id, bucket_name,context_id,preview_uri])
                  
             #v_path = frame.get_local_source()
             if img_path == None or img_path == '':
                 missing_count+=1
-                if missing_count<1000:
-                    context_id=frame.context_id
-                    frame_id=frame.id
-                    bucket_name = context_id.split('/')[2]
-                    list_of_missing_frame.append([frame_id, bucket_name])
+                if missing_count<100:
+                    list_of_missing_frame.append([frame_id, bucket_name,context_id,preview_uri])
                     print(f"missing_count: {missing_count}")
                 continue
             image = cv2.imread(img_path)
