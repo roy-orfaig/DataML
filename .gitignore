@@ -20,7 +20,7 @@ pip-delete-this-directory.txt
 *.bak
 *.~*
 *.env
-.gitignore
+*.gitignore
 
 # Ignore Jupyter Notebook checkpoints
 .ipynb_checkpoints/.env
