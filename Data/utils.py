@@ -134,6 +134,6 @@ def save_missing_frames_to_csv(list_of_missing_frames,filename="missing_frames.c
     with open(filename, mode='w', newline='') as file:
         writer =csv.writer(file)
         # Write header
-        writer.writerow(["missing frame ID", "bucket"])
+        writer.writerow(["missing frame ID", "bucket","context_id","preview_uri"])
         # Write data
         writer.writerows(list_of_missing_frames)
