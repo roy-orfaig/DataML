@@ -25,7 +25,7 @@ def main():
 
     roi_query='label.keyword:"dent__bubble" OR label.keyword:"dent__glasses" OR label.keyword:"dent__cluster" OR label.keyword:"dent__out_of_stripes"'
     example_quary='NOT meta.cam:at_front* AND NOT meta.cam:at_rear'
-    dv.add_query(dataset_name='atlas_lite_damages', version_name='split_18-0-0__scratch&dents__with_attributes__no_low_vis',example_quary=example_quary,roi_query=roi_query)
+    dv.add_query(dataset_name='atlas_lite_damages', version_name='split_18-0-0__scratch&dents__with_attributes__no_low_vis',frame_quary=example_quary,roi_query=roi_query)
    
     num_frames = dv.get_count()[0]
     print('\nnumber of frames: {}\n'.format(num_frames))

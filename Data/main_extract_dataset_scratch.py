@@ -35,7 +35,9 @@ def main():
     num_frames = dv.get_count()[0]
     print('\nnumber of frames: {}\n'.format(num_frames))
     new_frames = []
-    save_root_folder='/home/roy.o@uveye.local/projects/clearml/Dataset'
+    save_root_folder='/isilon/Automotive/RnD/roy.o/workspace/data/datasets/dent_is_scrath'
+    os.makedirs(save_root_folder, exist_ok=True)
+    print(f"Directory '{save_root_folder}' is ready.")
     counter=0
     class_mapping={"broken_part":0 ,"missing_part":1 ,"missing_lp":2 ,"manual_fix":3}
 
