@@ -17,17 +17,18 @@ def main():
 
    # print('arg_example:', opts.arg_example)
 
-    output_dataset_name = 'Dataset_BrokenPart'
-    output_version_name = 'Including_all_images'
+    output_dataset_name = 'Dataset_Scratch'
+    output_version_name = 'classes_scratch_paint_rust'
     DatasetVersion.create_new_dataset(dataset_name=output_dataset_name)
     dst_out = DatasetVersion.create_version(dataset_name=output_dataset_name, version_name=output_version_name)
-    ds_versions = [v.version_name for v in Dataset.get(dataset_name="atlas_lite__2025_Q1").get_versions() if
-                v.version_name != 'Current']
+    # ds_versions = [v.version_name for v in Dataset.get(dataset_name="atlas_lite__2025_Q1").get_versions() if
+    #             v.version_name != 'Current']
     dv = DataView(name='dv_dataset_atlas_lite_damage')
-    example_quary='meta.splits.generic.set:"train" OR meta.splits.generic.set:"val"'
+    #example_quary='meta.splits.generic.set:"train" OR meta.splits.generic.set:"val"'
     if True:
-        roi_query='label.keyword:"broken_part" OR label.keyword:"missing_part" OR label.keyword:"missing_lp" OR label.keyword:"manual_fix"'
-        dv.add_query(dataset_name='atlas_lite_damages', version_name='split_20-0-0__severe_spring',roi_query=roi_query)
+     #   roi_query='label.keyword:"scratch__surface_scratch" OR label.keyword:"scratch__scratch_w_paint_damage" OR label.keyword:"scratch__scratch" OR label.keyword:"paint" OR label.keyword:"rust"'
+        roi_query='label.keyword:"scratch" OR label.keyword:"paint" OR label.keyword:"rust"'
+        dv.add_query(dataset_name='atlas_lite_damages', version_name='split_18-0-0__scratch&dents__no_low_vis',roi_query=roi_query)
     else:
         roi_query='label.keyword:"scratch" OR label.keyword:"dent""'
         dv.add_query(dataset_name='atlas_lite_damages', version_name='ingest__atlas_lite_all__approved_week2__scratch&dents',frame_query= example_quary,roi_query=roi_query)
@@ -65,19 +66,19 @@ def main():
                     list_of_missing_frame.append([frame_id, bucket_name,context_id,preview_uri])
                     print(f"missing_count: {missing_count}")
                 continue
-            image = cv2.imread(img_path)
-            name_for_save = frame.id
-            dataset_type=frame.metadata["splits"]["generic"]["set"]
-            bboxes_list = extract_bboxes(frame)
-            image_width, image_height=get_image_size(frame)
-            # Define new save path
-            save_img_path = os.path.join(save_folder, 'images',dataset_type,name_for_save + '.png')
-            save_txt_path = os.path.join(save_folder, 'labels', dataset_type,name_for_save+'.txt')
-            save_txt_path_pixels = os.path.join(save_folder, 'labels_pixels', dataset_type,name_for_save+'.txt')
-            # Save the image
-            cv2.imwrite(save_img_path, image)
-            save_labels(bboxes_list, class_mapping, image_width, image_height,save_txt_path)
-            save_labels_pixels(bboxes_list, class_mapping,save_txt_path_pixels )
+            # image = cv2.imread(img_path)
+            # name_for_save = frame.id
+            # dataset_type=frame.metadata["splits"]["generic"]["set"]
+            # bboxes_list = extract_bboxes(frame)
+            # image_width, image_height=get_image_size(frame)
+            # # Define new save path
+            # save_img_path = os.path.join(save_folder, 'images',dataset_type,name_for_save + '.png')
+            # save_txt_path = os.path.join(save_folder, 'labels', dataset_type,name_for_save+'.txt')
+            # save_txt_path_pixels = os.path.join(save_folder, 'labels_pixels', dataset_type,name_for_save+'.txt')
+            # # Save the image
+            # cv2.imwrite(save_img_path, image)
+            # save_labels(bboxes_list, class_mapping, image_width, image_height,save_txt_path)
+            # save_labels_pixels(bboxes_list, class_mapping,save_txt_path_pixels )
             #save_in_dataset
             counter += 1
             new_frames.append(frame)

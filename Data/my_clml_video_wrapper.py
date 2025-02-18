@@ -4,6 +4,9 @@ from allegroai import SingleFrame
 import cv2
 import logging
 from tqdm import tqdm
+import argparse
+import subprocess
+import sys
 
 def my_local_source_video_aware(clml_frame: SingleFrame, frame_format: str = 'png', save_one_img: bool = True) -> str:
     local_prefix = "/isilon/Automotive/Data/Algo/clearml_global_cache/storage/s3"
@@ -18,7 +21,18 @@ def my_local_source_video_aware(clml_frame: SingleFrame, frame_format: str = 'pn
         if os.path.splitext(local_path)[-1] in [".mp4", ".mkv", ".webm"] and os.path.isfile(local_path):
             print(f"File is not at S3 but found at local path: {local_path}")
         else:
-            local_path=''
+            import boto3
+            s3 = boto3.client("s3")
+            directory_path=directory_path = os.path.dirname(local_path)
+            os.makedirs(directory_path, exist_ok=True)
+            subprocess.run(["sudo", "chmod", "-R", "777", directory_path], check=True)
+            print(f"Permissions changed successfully for: {directory_path}")
+            s3.download_file(bucket_name, object_key, local_path)
+            if os.path.splitext(local_path)[-1] in [".mp4", ".mkv", ".webm"] and os.path.isfile(local_path):
+                print(f"File is not at S3 but found at local path: {local_path}")
+            else:
+                local_path=""
+            
 
     # Only supported types (mp4, mkv, webm)
     if os.path.splitext(local_path)[-1] in [".mp4", ".mkv", ".webm"]:
@@ -75,6 +89,9 @@ def my_local_source_video_aware(clml_frame: SingleFrame, frame_format: str = 'pn
         else:
             raise Exception(f"Frame with timestamp {clml_frame.timestamp} does not exist in video file {decompressed_frame_file_path}")
     else:
-        local_path=''
-        return local_path
+        if os.path.splitext(local_path)[-1] in [".png"]:
+            return local_path
+        else:
+            return ''
+      
 

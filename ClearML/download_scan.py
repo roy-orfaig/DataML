@@ -74,16 +74,22 @@ def get_scan_from_uvcamp_path(main_dir_path, bucket_name, uvcamp_path):
 
 
 def main():
-    bucket_name = "production-us-eks-data"
+    #bucket_name = "production-us-eks-data"
    # s3_folder = "8z39DfzVRhzwWuf1Zyaw/O9GTKitGkWXFh1I1kmkC/2f67b7df-5860-4f88-aa77-51004fbe1793"
     #main_dir_path = "/isilon/Automotive/RnD/Amit/Projects/data/cluster_miss_2025_01_19"
     
     # bucket_name = "production-us-eks-data"
-    s3_folder = "AhdNZGfMY8HkuOrS9FNA/SDtTSRpbuc3n1NqZDOMx/3b263006-ec95-4ae9-ba9b-c3cfec63f432"
-    main_dir_path = "/isilon/Automotive/RnD/roy.o/workspace/data/bug_volvo_dec2024"
+   # s3_folder = "AhdNZGfMY8HkuOrS9FNA/SDtTSRpbuc3n1NqZDOMx/3b263006-ec95-4ae9-ba9b-c3cfec63f432"
+   # main_dir_path = "/isilon/Automotive/RnD/roy.o/workspace/data/bug_volvo_dec2024"
  #   main_dir_path="/home/roy.o@uveye.local/projects/data/delete_me"
-    get_scan(main_dir_path, bucket_name, s3_folder)
+    s3_folder ="Hp18VWM9eMNrDdzeYpB5/usa-volvo-princeton/85898212-c62c-453f-bc6d-70d0fce48331"
+    bucket_name = "production-usa-eks-uveye-data"
+    # bucket_name = "staging-eu-algo-data"
+    # s3_folder = "luyYoCU3g3YA24hoikNy/UXEsl146xTTfDcVuBHa7/20250202/a8c931bf-64c2-4505-b155-8044b5c246b9"
+    main_dir_path = "/isilon/Automotive/RnD/roy.o/workspace/data/bug_algoflow_dec2024_check"
 
+    get_scan(main_dir_path, bucket_name, s3_folder)
+    
 
 if __name__ == '__main__':
     from dotenv import load_dotenv
