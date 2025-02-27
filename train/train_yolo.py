@@ -6,7 +6,8 @@ from ultralytics import YOLO
 
 # Set MLflow tracking
 
-mlflow.set_tracking_uri("http://localhost:5000")  # Change if using a remote MLflow server
+mlflow.set_tracking_uri("http://127.0.0.1:6000")
+#mlflow.set_tracking_uri("http://localhost:5000")  # Change if using a remote MLflow server
 mlflow.set_experiment("YOLOv8 Training with Full Metrics")
 
 # mlflow.set_tracking_uri("file:///home/roy.o@uveye.local/mlruns")  # Change path as needed
@@ -14,14 +15,15 @@ mlflow.set_experiment("YOLOv8 Training with Full Metrics")
 
 
 # Define dataset and training parameters
-data_yaml = "/home/roy.o@uveye.local/projects/Data/tile_1024/data.yaml"  # Update with actual path
-epochs = 1
+#data_yaml = "/home/roy.o@uveye.local/projects/Data/tile_1024/data.yaml"  # Update with actual path
+data_yaml="/isilon/Automotive/RnD/roy.o/broken_part_dataset/tile_1024/data.yaml"
+epochs = 50
 batch_size = 4
 img_size = 1024
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
 # Load YOLOv8 model
-model = YOLO("yolov8n.pt")  # Choose appropriate model size (n, s, m, l, x)
+model = YOLO("yolov8l.pt")  # Choose appropriate model size (n, s, m, l, x)
 
 with mlflow.start_run():
     mlflow.log_param("epochs", epochs)

@@ -7,6 +7,19 @@ import argparse
 import cv2
 from my_clml_video_wrapper import my_local_source_video_aware
 from utils import create_dataset_folders,create_dataset_folders,save_missing_frames_to_csv,save_labels_pixels,save_labels,extract_bboxes,get_image_size
+
+
+def convert_names(bboxes):
+    """
+    Converts the labels in the bounding boxes to the desired format.
+    "dent__bubble", "dent__glasses", "dent__cluster" -> "dent_is"
+    "dent__out_of_stripes" -> "dent_os"
+    """
+    return [(label if label not in ["dent__bubble", "dent__glasses", "dent__cluster", "dent__out_of_stripes"]
+             else "dent_is" if label in ["dent__bubble", "dent__glasses", "dent__cluster"]
+             else "dent_os", bbox) for label, bbox in bboxes]
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--arg_example", default="look_at_me", type=str)
@@ -17,29 +30,31 @@ def main():
 
    # print('arg_example:', opts.arg_example)
 
-    output_dataset_name = 'Dataset_Scratch'
-    output_version_name = 'classes_scratch_paint_rust'
-    DatasetVersion.create_new_dataset(dataset_name=output_dataset_name)
-    dst_out = DatasetVersion.create_version(dataset_name=output_dataset_name, version_name=output_version_name)
-    # ds_versions = [v.version_name for v in Dataset.get(dataset_name="atlas_lite__2025_Q1").get_versions() if
-    #             v.version_name != 'Current']
+    # output_dataset_name = 'Dataset_Dent'
+    # output_version_name = 'classes_dent_is_oos'
+    # DatasetVersion.create_new_dataset(dataset_name=output_dataset_name)
+    # dst_out = DatasetVersion.create_version(dataset_name=output_dataset_name, version_name=output_version_name)
     dv = DataView(name='dv_dataset_atlas_lite_damage')
-    #example_quary='meta.splits.generic.set:"train" OR meta.splits.generic.set:"val"'
-    if True:
-     #   roi_query='label.keyword:"scratch__surface_scratch" OR label.keyword:"scratch__scratch_w_paint_damage" OR label.keyword:"scratch__scratch" OR label.keyword:"paint" OR label.keyword:"rust"'
-        roi_query='label.keyword:"scratch" OR label.keyword:"paint" OR label.keyword:"rust"'
-        dv.add_query(dataset_name='atlas_lite_damages', version_name='split_18-0-0__scratch&dents__no_low_vis',roi_query=roi_query)
-    else:
-        roi_query='label.keyword:"scratch" OR label.keyword:"dent""'
-        dv.add_query(dataset_name='atlas_lite_damages', version_name='ingest__atlas_lite_all__approved_week2__scratch&dents',frame_query= example_quary,roi_query=roi_query)
+
+    roi_query_is_bubble='label.keyword:"dent__bubble"'
+    roi_query_is_glasses='label.keyword:"dent__glasses"'
+    roi_query_is_cluster='label.keyword:"dent__cluster"'
+    roi_query_oos='"dent__out_of_stripes"'
+    #example_query='NOT meta.cam:at_front* AND NOT meta.cam:at_rear'
+    example_query_is='meta.splits.generic.set:"val" ANT NOT meta.cam:at_front* AND NOT meta.cam:at_rear*'
+    example_query_oos='meta.splits.generic.set:"val"'
+    dv.add_query(dataset_name='atlas_lite_damages', version_name='split_16-0-0__scratch&dents__with_attributes',frame_query=example_query_is,roi_query=roi_query_is_bubble)
+    dv.add_query(dataset_name='atlas_lite_damages', version_name='split_18-0-0__scratch&dents__with_attributes',frame_query=example_query_is,roi_query=roi_query_is_glasses)
+    dv.add_query(dataset_name='atlas_lite_damages', version_name='split_18-0-0__scratch&dents__with_attributes',frame_query=example_query_is,roi_query=roi_query_is_cluster)
+    dv.add_query(dataset_name='atlas_lite_damages', version_name='split_18-0-0__scratch&dents__with_attributes',frame_query=example_query_oos,roi_query=roi_query_oos) 
     num_frames = dv.get_count()[0]
     print('\nnumber of frames: {}\n'.format(num_frames))
     new_frames = []
-    save_root_folder='/isilon/Automotive/RnD/roy.o/workspace/data/datasets/dent_is_scrath'
+    save_root_folder='/home/uveye.local/roy.o/Dataset/dent_part'
     os.makedirs(save_root_folder, exist_ok=True)
     print(f"Directory '{save_root_folder}' is ready.")
     counter=0
-    class_mapping={"broken_part":0 ,"missing_part":1 ,"missing_lp":2 ,"manual_fix":3}
+    class_mapping={"dent_is":0 ,"dent_oos":1}
 
     save_folder=create_dataset_folders(save_root_folder)
     csv_file=save_folder+"/missing_file.csv"
@@ -72,7 +87,8 @@ def main():
             name_for_save = frame.id
             dataset_type=frame.metadata["splits"]["generic"]["set"]
             bboxes_list = extract_bboxes(frame)
-            image_width, image_height=get_image_size(frame)
+            bboxes_list = convert_names(bboxes_list) 
+            image_height,image_width,_=image.shape
             # Define new save path
             save_img_path = os.path.join(save_folder, 'images',dataset_type,name_for_save + '.png')
             save_txt_path = os.path.join(save_folder, 'labels', dataset_type,name_for_save+'.txt')
@@ -81,13 +97,13 @@ def main():
             cv2.imwrite(save_img_path, image)
             save_labels(bboxes_list, class_mapping, image_width, image_height,save_txt_path)
             save_labels_pixels(bboxes_list, class_mapping,save_txt_path_pixels )
-           # save_in_dataset
+            #save_in_dataset
             counter += 1
-            new_frames.append(frame)
-            print(f"Missing count: {int(missing_count)}")
-            if len(new_frames) >= 100:
-                dst_out.add_frames(new_frames)
-                new_frames = []
+            # new_frames.append(frame)
+            # print(f"Missing count: {int(missing_count)}")
+            # if len(new_frames) >= 100:
+            #     dst_out.add_frames(new_frames)
+            #     new_frames = []
     
     save_missing_frames_to_csv(list_of_missing_frame,csv_file)
     save_missing_frames_to_csv(production_bucket_frame,csv_file_prod)

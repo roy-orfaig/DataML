@@ -2,7 +2,8 @@ import os
 import cv2
 
 # Define class mapping and colors
-class_mapping = {"broken_part": 0, "missing_part": 1, "missing_lp": 2, "manual_fix": 3}
+#class_mapping = {"broken_part": 0, "missing_part": 1, "missing_lp": 2, "manual_fix": 3}
+class_mapping = {"dent_is":0, "dent_os": 1}
 CLASS_COLORS = {
     0: (0, 0, 255),   # Red
     1: (255, 0, 0),   # Blue
@@ -14,7 +15,9 @@ CLASS_COLORS = {
 class_names = {v: k for k, v in class_mapping.items()}
 
 def process_dataset(base_dir, output_dir):
-    for split in ['train', 'val']:
+    for split in ['val']:
+  #  for split in ['train', 'val']:
+     
         image_folder = os.path.join(base_dir, 'images', split)
         label_folder = os.path.join(base_dir, 'labels', split)
         output_folder = os.path.join(output_dir, split)
@@ -91,7 +94,8 @@ def process_dataset(base_dir, output_dir):
 
 # Example usage:
 #data_directory = "/home/roy.o@uveye.local/projects/clearml/Dataset/2025-01-28_11-27-25"  # Change this to your dataset path
-data_directory='/home/roy.o@uveye.local/projects/Data/tile_1024'
+#data_directory='/home/uveye.local/roy.o/Dataset/Broken_part/2025-02-18_10-45-39'
+data_directory='/home/uveye.local/roy.o/Dataset/dent_part/2025-02-24_14-49-04'
 output_directory = os.path.join(data_directory, "annotations")  # Output folder where labeled images will be saved
 os.makedirs(output_directory, exist_ok=True)
 process_dataset(data_directory, output_directory)

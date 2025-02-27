@@ -14,7 +14,7 @@ def save_labels(bboxes_list, class_mapping, image_width, image_height, output_fi
     :param output_file: Name of the output file to save results
     """
     filtered_bboxes = []
-
+    
     for label, bbox in bboxes_list:
         if label in class_mapping:
             new_label = class_mapping[label]  # Replace label with its index
@@ -27,9 +27,19 @@ def save_labels(bboxes_list, class_mapping, image_width, image_height, output_fi
             w /= image_width
             h /= image_height
 
+
+# Check for values exceeding 1 and print them
+            assert 0 <= x <= 1, f"Invalid x value: {x} (should be in [0,1])"
+            assert 0 <= y <= 1, f"Invalid y value: {y} (should be in [0,1])"
+            assert 0 <= w <= 1, f"Invalid width value: {w} (should be in [0,1])"
+            assert 0 <= h <= 1, f"Invalid height value: {h} (should be in [0,1])"
+
+            if x > 1 or y > 1:
+                print(f"Check values: x={x}, y={y}, w={w}, h={h}")
+
             filtered_bboxes.append((new_label, [x, y, w, h]))
 
-    # Write to file in YOLO format
+    #Write to file in YOLO format
     with open(output_file, "w") as f:
         for label, bbox in filtered_bboxes:
             f.write(f"{label} {bbox[0]:.5f} {bbox[1]:.5f} {bbox[2]:.5f} {bbox[3]:.5f}\n")
