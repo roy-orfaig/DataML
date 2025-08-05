@@ -26,17 +26,18 @@ def main():
     dv = DataView(name='dv_dataset_atlas_lite_damage')
     example_quary='meta.splits.generic.set:"train" OR meta.splits.generic.set:"val"'
     if True:
-        roi_query='label.keyword:"broken_part" OR label.keyword:"missing_part" OR label.keyword:"missing_lp" OR label.keyword:"manual_fix"'
-        dv.add_query(dataset_name='atlas_lite_damages', version_name='split_20-0-0__severe_spring',roi_query=roi_query)
+        roi_query='label.keyword:"broken_part" OR label.keyword:"missing_part" OR label.keyword:"missing_lp" OR label.keyword:"manual_fix" OR label.keyword:"lights_damage"'
+       # dv.add_query(dataset_name='atlas_lite_damages', version_name='split_20-0-0__severe_spring',roi_query=roi_query)
+        dv.add_query(dataset_name='atlas_lite_damages', version_name='lights_damage_split_1-1-0',roi_query=roi_query)
     else:
         roi_query='label.keyword:"scratch" OR label.keyword:"dent""'
         dv.add_query(dataset_name='atlas_lite_damages', version_name='ingest__atlas_lite_all__approved_week2__scratch&dents',frame_query= example_quary,roi_query=roi_query)
     num_frames = dv.get_count()[0]
     print('\nnumber of frames: {}\n'.format(num_frames))
     new_frames = []
-    save_root_folder='/home/uveye.local/roy.o/Dataset/Broken_part'
+    save_root_folder='/isilon/Automotive/RnD/roy.o/broken_part_dataset'
     counter=0
-    class_mapping={"broken_part":0 ,"missing_part":1 ,"missing_lp":2 ,"manual_fix":3}
+    class_mapping={"broken_part":0 ,"missing_part":1 ,"missing_lp":2 ,"manual_fix":3 ,"lights_damage": 4}
 
     save_folder=create_dataset_folders(save_root_folder)
     csv_file=save_folder+"/missing_file.csv"
